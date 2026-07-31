@@ -5221,14 +5221,11 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
     return true;
   }
 
-  // On localhost: set/update noVNC URL (versioned so it auto-updates when URL changes)
-  const KASM_URL_VERSION = '10';  // Increment to force localStorage refresh
-  // Direct connection to VNC via backend proxy (single-port architecture)
-  const CORRECT_KASM_URL = '/desktop/vnc.html?autoconnect=true&password=headless&resize=scale&reconnect=true&reconnect_delay=1000';
-  // Always update localStorage on load to ensure correct URL
+  // On localhost: clear any stale kasm_url / VNC URL — we use Playwright MJPEG stream (port 4000) instead.
+  // The /desktop/vnc.html path is no longer served (no VNC server running).
   if (isLocal) {
-    localStorage.setItem('kasm_url', CORRECT_KASM_URL);
-    localStorage.setItem('kasm_url_version', KASM_URL_VERSION);
+    localStorage.removeItem('kasm_url');
+    localStorage.removeItem('kasm_url_version');
   }
 
   function getSavedDesktopUrl() {
