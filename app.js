@@ -3939,7 +3939,8 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
 
         // Try WebSocket first (real-time push, <5ms latency on HF)
         try {
-          agentWs = new WebSocket(buildAgentWebSocketUrl(hfUrl));
+          const wsUrl = hfUrl ? buildAgentWebSocketUrl(hfUrl) : `ws://${window.location.hostname || '127.0.0.1'}:4000/ws`;
+          agentWs = new WebSocket(wsUrl);
           await new Promise((resolve, reject) => {
             const t = setTimeout(() => reject(new Error('WS timeout')), 3000);
             agentWs.onopen  = () => { clearTimeout(t); usingWs = true; resolve(); };
@@ -5305,22 +5306,25 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
     if (desktopStreamStarted && !frameIsBlank) return;
     desktopStreamStarted = true;
 
-    // ── Priority 0: Local desktop agent MJPEG stream (via backend proxy) ──
+    // ── Priority 0: Local desktop agent MJPEG stream (port 4000) ──
     if (isLocal) {
-      const agentUrl = '/api/desktop';
-      fetch(agentUrl + '/status').then(r => r.json()).then(d => {
-        if (d.running) {
+      const agentHost = window.location.hostname || '127.0.0.1';
+      const agentBaseUrl = `http://${agentHost}:4000`;
+      fetch(agentBaseUrl + '/health').then(r => r.json()).then(d => {
+        if (d && (d.status === 'ok' || d.desktop)) {
           // Replace iframe with MJPEG img for live desktop stream
           const img = document.createElement('img');
           img.id = 'desktopFrame';
           img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;display:block;';
-          img.src = agentUrl + '/stream.mjpeg';
+          img.src = agentBaseUrl + '/stream.mjpeg';
           img.alt = 'Desktop Agent Live Stream';
-          desktopFrame.parentNode.replaceChild(img, desktopFrame);
-          desktopFrame = img;
+          if (desktopFrame && desktopFrame.parentNode) {
+            desktopFrame.parentNode.replaceChild(img, desktopFrame);
+            desktopFrame = img;
+          }
           // Update header
           const urlEl = document.getElementById('splitPaneHeaderUrl');
-          if (urlEl) { urlEl.textContent = 'Desktop Agent'; urlEl.style.display = 'inline'; }
+          if (urlEl) { urlEl.textContent = 'Desktop Agent (Live Stream)'; urlEl.style.display = 'inline'; }
           const browserLabel = document.getElementById('splitPaneBrowserLabel');
           if (browserLabel) browserLabel.textContent = 'Zed is using Desktop';
           if (desktopConnectingOverlay) desktopConnectingOverlay.style.display = 'none';
