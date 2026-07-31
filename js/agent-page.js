@@ -21,13 +21,21 @@ const agentPixelAvatars = {
   assistant: `<img src="assets/models/assistant_avatar.png" alt="Assistant Agent" style="width: 100%; height: 100%; object-fit: cover;">`
 };
 
+const defaultAgentsList = [
+  { id: "security", name: "Security Sentinel", desc: "Monitors vulnerability advisories, audits dependencies, and enforces security policies.", status: "active", avatar: "security", model: "Claude 3.7 Sonnet", provider: "anthropic", schedule: "Manual" },
+  { id: "coder", name: "Code Architect", desc: "Automates refactoring, generates unit test suites, and conducts automated code reviews.", status: "active", avatar: "coder", model: "GPT-4o", provider: "openai", schedule: "Manual" },
+  { id: "research", name: "Deep Researcher", desc: "Gathers web data, analyzes documentation, and produces technical summaries.", status: "active", avatar: "research", model: "Gemini 2.0 Flash", provider: "google", schedule: "Manual" },
+  { id: "finance", name: "Cost Guard", desc: "Tracks LLM API spending, flags abnormal usage, and optimizes context budget.", status: "paused", avatar: "finance", model: "Orchestrator", provider: "zed-pro", schedule: "Manual" },
+  { id: "social", name: "Community Manager", desc: "Drafts release notes, monitors feedback channels, and manages announcements.", status: "inactive", avatar: "social", model: "GPT-4o-mini", provider: "openai", schedule: "Manual" }
+];
+
 class AgentsStore {
   constructor() {
-    this.agents = [];
+    this.agents = defaultAgentsList;
     this.filter = "all";
     this.searchQuery = "";
     this.listeners = [];
-    this.loaded = false;
+    this.loaded = true;
   }
 
   subscribe(listener) {
@@ -56,12 +64,14 @@ class AgentsStore {
       const res = await fetch('/api/agents');
       if (res.ok) {
         const data = await res.json();
-        this.agents = data.agents || [];
-        this.loaded = true;
-        this.notify();
+        if (data.agents && data.agents.length > 0) {
+          this.agents = data.agents;
+          this.loaded = true;
+          this.notify();
+        }
       }
     } catch (e) {
-      console.warn('[Agents] Failed to load from backend:', e);
+      console.warn('[Agents] Failed to load from backend, using defaults:', e);
     }
   }
 
