@@ -5307,6 +5307,7 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
     desktopStreamStarted = true;
 
     // ── Priority 0: Local desktop agent MJPEG stream (port 4000) ──
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
     if (isLocal) {
       const agentHost = window.location.hostname || '127.0.0.1';
       const agentBaseUrl = `http://${agentHost}:4000`;
