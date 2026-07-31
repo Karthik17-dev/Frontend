@@ -5308,24 +5308,58 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
     if (isLocal) {
       const agentHost = window.location.hostname || '127.0.0.1';
       const agentBaseUrl = `http://${agentHost}:4000`;
+      const agentWsBase = `ws://${agentHost}:4000`;
       fetch(agentBaseUrl + '/health').then(r => r.json()).then(d => {
         if (d && (d.status === 'ok' || d.desktop)) {
-          // Replace iframe with MJPEG img for live desktop stream
-          const img = document.createElement('img');
-          img.id = 'desktopFrame';
-          img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;display:block;';
-          img.src = agentBaseUrl + '/stream.mjpeg';
-          img.alt = 'Desktop Agent Live Stream';
-          if (desktopFrame && desktopFrame.parentNode) {
-            desktopFrame.parentNode.replaceChild(img, desktopFrame);
-            desktopFrame = img;
-          }
+          // ── WebSocket canvas live stream ──────────────────────────────
+          const viewport = document.getElementById('splitPaneViewport');
+          if (!viewport) return;
+          // Remove old frame
+          if (desktopFrame && desktopFrame.parentNode) desktopFrame.parentNode.removeChild(desktopFrame);
+          // Create canvas for rendering frames
+          const canvas = document.createElement('canvas');
+          canvas.id = 'desktopFrame';
+          canvas.style.cssText = 'width:100%;height:100%;display:block;background:#111;';
+          viewport.appendChild(canvas);
+          desktopFrame = canvas;
+          const ctx = canvas.getContext('2d');
           // Update header
           const urlEl = document.getElementById('splitPaneHeaderUrl');
-          if (urlEl) { urlEl.textContent = 'Desktop Agent (Live Stream)'; urlEl.style.display = 'inline'; }
+          if (urlEl) { urlEl.textContent = 'Desktop Agent (Live)'; urlEl.style.display = 'inline'; }
           const browserLabel = document.getElementById('splitPaneBrowserLabel');
           if (browserLabel) browserLabel.textContent = 'Zed is using Desktop';
           if (desktopConnectingOverlay) desktopConnectingOverlay.style.display = 'none';
+          // Connect WebSocket stream
+          let streamWs = null;
+          let streamRetry = null;
+          function connectStreamWs() {
+            if (streamRetry) clearTimeout(streamRetry);
+            streamWs = new WebSocket(agentWsBase + '/stream');
+            streamWs.binaryType = 'blob';
+            streamWs.onopen = () => {
+              if (desktopConnectingOverlay) desktopConnectingOverlay.style.display = 'none';
+            };
+            streamWs.onmessage = (e) => {
+              try {
+                const msg = JSON.parse(e.data);
+                if (msg.type === 'frame' && msg.data) {
+                  canvas.width = msg.width || 1920;
+                  canvas.height = msg.height || 1080;
+                  const img = new Image();
+                  img.onload = () => ctx.drawImage(img, 0, 0);
+                  img.src = 'data:image/jpeg;base64,' + msg.data;
+                }
+              } catch(_) {}
+            };
+            streamWs.onerror = () => {};
+            streamWs.onclose = () => {
+              // Reconnect after 1s
+              streamRetry = setTimeout(connectStreamWs, 1000);
+            };
+          }
+          connectStreamWs();
+          // Store ref for cleanup on tab switch
+          window._desktopStreamWs = { close: () => { if (streamWs) streamWs.close(); if (streamRetry) clearTimeout(streamRetry); } };
           return;
         }
       }).catch(() => {});
