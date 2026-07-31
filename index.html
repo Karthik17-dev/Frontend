@@ -590,8 +590,11 @@
           </div>
         </div>
 
-        <!-- Navigation Tabs Row (Shadcn UI Tabs) -->
-        <div id="modelsTabs-root" style="margin-bottom: 24px;"></div>
+        <!-- Navigation Tabs Row -->
+        <div class="models-tabs-nav-bar">
+          <button class="models-tab-btn active" data-tab="providers">Providers</button>
+          <button class="models-tab-btn" data-tab="models">Models</button>
+        </div>
 
         <!-- TAB CONTENT: Providers (active by default) -->
         <div class="models-tab-content active" id="tabContentProviders">
@@ -693,10 +696,9 @@
         <div class="schedules-header-row">
           <div class="schedules-header-left">
             <h1 class="schedules-title">Schedules</h1>
-            <p class="schedules-subtitle">Schedule agents and tasks to run automatically—when you want, how you want.</p>
           </div>
           <div class="schedules-header-right">
-            <button class="btn-create-agent-action" id="btnCreateSchedule">
+            <button class="schedules-btn-create" id="btnCreateSchedule">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>Create schedule</span>
             </button>
@@ -815,7 +817,11 @@
         <div class="schedules-table-container-card">
           <!-- Table Controls (Tabs & Search) -->
           <div class="schedules-table-controls">
-            <div id="schedulesTabs-root"></div>
+            <div class="schedules-tabs">
+              <button class="schedule-tab active" data-status="all">All</button>
+              <button class="schedule-tab" data-status="active">Active</button>
+              <button class="schedule-tab" data-status="paused">Paused</button>
+            </div>
             <div class="schedules-search-box">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="text" id="scheduleSearchInput" placeholder="Search schedules...">
@@ -1153,7 +1159,7 @@
 
         <!-- Agents List Container -->
         <div class="agents-list-wrapper" id="agentsListWrapper">
-          <div id="agentCards-root"></div>
+          <!-- Dynamically populated agents list -->
         </div>
 
         <!-- Bottom Page Indicator -->

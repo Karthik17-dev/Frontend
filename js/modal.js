@@ -1746,6 +1746,7 @@ export function openConnectFlow(id, store) {
     statusDiv.innerHTML = `<span>⏳ Checking API connection and fetching models...</span>`;
 
     let fetchedModels = [];
+    let isCorsFallback = false;
     try {
       fetchedModels = await validateAndFetchModels(model.provider || model.name, apiKey, baseUrl);
     } catch (err) {
@@ -1756,8 +1757,9 @@ export function openConnectFlow(id, store) {
         const defKey = provLower.replace(' ai', '');
         const defModels = defaultProviderModelsMap[defKey] || [];
         fetchedModels = defModels.map(dm => dm.id);
+        isCorsFallback = true;
         console.warn(`Connection warning: Network/CORS block. Using offline models fallback:`, err);
-        statusDiv.innerHTML = `<span style="color:#E28743;font-weight:600;">✓ Connected (CORS offline fallback)</span>`;
+        statusDiv.innerHTML = `<span style="color:#E28743;font-weight:600;">⚠ CORS blocked — using offline default models (not verified)</span>`;
       } else {
         statusDiv.innerHTML = `<span style="color:#E11D48;font-weight:600;">Could not connect: ${friendlyError(err, baseUrl)}</span>`;
         connectBtn.disabled = false;
@@ -1766,7 +1768,7 @@ export function openConnectFlow(id, store) {
       }
     }
 
-    if (model.type === 'provider') {
+    if (!isCorsFallback && model.type === 'provider') {
       const checkedBoxes = modelsContainer?.querySelectorAll('.model-select-checkbox:checked') || [];
       const manualModel = connectPageView.querySelector('#sidebarProviderManualModel')?.value.trim();
       const effectiveBaseUrl = baseUrl || model.settings?.baseUrl || '';
@@ -1807,7 +1809,7 @@ export function openConnectFlow(id, store) {
           closeSidebar();
         }, 600);
       }
-    } else {
+    } else if (!isCorsFallback) {
       // Official model connection
       const checkboxes = connectPageView.querySelectorAll('.model-select-checkbox');
       checkboxes.forEach(cb => {
@@ -1935,9 +1937,15 @@ export function openAddProviderModal(store) {
   if (modelsPageView) modelsPageView.style.display = 'none';
   connectPageView.style.display = 'flex';
 
+  let closeDropdownOnDocClick = null;
+
   const closeSidebar = () => {
     connectPageView.style.display = 'none';
     if (modelsPageView) modelsPageView.style.display = 'block';
+    if (closeDropdownOnDocClick) {
+      document.removeEventListener('click', closeDropdownOnDocClick);
+      closeDropdownOnDocClick = null;
+    }
   };
 
   closeBtn.addEventListener('click', closeSidebar);
@@ -1974,7 +1982,7 @@ export function openAddProviderModal(store) {
       e.stopPropagation();
       agentMoreMenu.classList.toggle('show');
     });
-    document.addEventListener('click', () => {
+    document.addEventListener('click', closeDropdownOnDocClick = () => {
       agentMoreMenu.classList.remove('show');
     });
     agentMoreMenu.addEventListener('click', (e) => {

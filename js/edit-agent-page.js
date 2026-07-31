@@ -5,6 +5,7 @@ import { SKILLS_CATALOG, getSkillById } from './skills-catalog.js';
 import { showToast } from './toast.js';
 
 let currentEditingAgentId = null;
+const editPageCleanupFns = [];
 const state = {
   name: '',
   desc: '',
@@ -65,16 +66,22 @@ export function initEditAgentPage() {
   const changeAvatarBtn = document.getElementById('eaChangeAvatarBtn');
   const avatarDropdown = document.getElementById('eaAvatarDropdown');
   
+  // Clean up previous listeners if re-initialized
+  for (const fn of editPageCleanupFns) fn();
+  editPageCleanupFns.length = 0;
+
   changeAvatarBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     avatarDropdown.classList.toggle('show');
   });
 
-  document.addEventListener('click', (e) => {
+  const onDocClickForAvatar = (e) => {
     if (avatarDropdown && !avatarDropdown.contains(e.target) && e.target !== changeAvatarBtn) {
       avatarDropdown.classList.remove('show');
     }
-  });
+  };
+  document.addEventListener('click', onDocClickForAvatar);
+  editPageCleanupFns.push(() => document.removeEventListener('click', onDocClickForAvatar));
 
   const avatarOptionElements = avatarDropdown?.querySelectorAll('.avatar-option');
   avatarOptionElements?.forEach(opt => {
@@ -124,11 +131,13 @@ export function initEditAgentPage() {
     }
   });
 
-  document.addEventListener('click', (e) => {
+  const onDocClickForModel = (e) => {
     if (primaryModelDropdown && !primaryModelDropdown.contains(e.target) && e.target !== primaryModelTrigger) {
       primaryModelDropdown.style.display = 'none';
     }
-  });
+  };
+  document.addEventListener('click', onDocClickForModel);
+  editPageCleanupFns.push(() => document.removeEventListener('click', onDocClickForModel));
 
   // Save changes button logic
   const btnSave = document.getElementById('btnEditAgentSave');
@@ -144,6 +153,15 @@ export function initEditAgentPage() {
     if (!currentEditingAgentId) {
       console.error('[Edit] No agent ID to update');
       showToast('Error: No agent selected for editing.', 'error');
+      return;
+    }
+
+    const existingAgent = agentsStore.agents.find(a => a.id === currentEditingAgentId);
+    if (!existingAgent) {
+      showToast('Error: This agent no longer exists.', 'error');
+      currentEditingAgentId = null;
+      editPage.style.display = 'none';
+      agentPage.style.display = 'flex';
       return;
     }
 
@@ -268,17 +286,19 @@ export function initEditAgentPage() {
   window.openEditAgentPage = openEditAgentPage;
 
   // Subscriptions to refresh lists when stores change
-  pluginsStore.subscribe(() => {
+  const unsubPlugins = pluginsStore.subscribe(() => {
     if (editPage.style.display === 'flex') {
       renderEditAgentPlugins();
     }
   });
+  editPageCleanupFns.push(unsubPlugins);
 
-  modelsStore.subscribe(() => {
+  const unsubModels = modelsStore.subscribe(() => {
     if (editPage.style.display === 'flex') {
       renderModels();
     }
   });
+  editPageCleanupFns.push(unsubModels);
 }
 
 export function openEditAgentPage(agentId) {

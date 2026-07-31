@@ -5534,12 +5534,14 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
     const computerSplitPane = document.getElementById('computerSplitPane');
 
     if (shouldShow) {
+      localStorage.setItem('agent_split_open', 'true');
       localStorage.setItem('computer_split_open', 'false');
       mainContent.classList.add('agent-split-mode');
       agentSplitPane.style.display = 'flex';
       if (computerSplitPane) computerSplitPane.style.display = 'none';
       mainContent.classList.remove('computer-split-mode');
     } else {
+      localStorage.setItem('agent_split_open', 'false');
       mainContent.classList.remove('agent-split-mode');
       agentSplitPane.style.display = 'none';
     }
@@ -5549,6 +5551,10 @@ For simple greetings or questions — just respond with text. For tasks: plan fi
   // the same cloud noVNC URL; Chrome itself remains on the browser service.
   if (localStorage.getItem('computer_split_open') === 'true') {
     requestAnimationFrame(() => toggleComputerSplit(true));
+  }
+
+  if (localStorage.getItem('agent_split_open') === 'true') {
+    requestAnimationFrame(() => toggleAgentSplit(true));
   }
 
   if (modeCapsule) {
