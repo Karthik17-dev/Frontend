@@ -6844,8 +6844,8 @@ aside.sidebar.collapsed .sidebar-logo {
   background: #F9FAFB;
 }
 .schedule-card.selected {
-  border-color: #2563EB;
-  background: #EFF6FF;
+  border-color: #000000;
+  background: #F5F5F5;
 }
 
 .sched-card-header {
@@ -6868,8 +6868,8 @@ aside.sidebar.collapsed .sidebar-logo {
   flex-shrink: 0;
 }
 .schedule-card.selected .sched-card-dot {
-  border-color: #2563EB;
-  background: #2563EB;
+  border-color: #000000;
+  background: #000000;
 }
 
 .sched-card-title {
@@ -7027,9 +7027,9 @@ aside.sidebar.collapsed .sidebar-logo {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .model-row.selected {
-  border-color: #2563EB;
-  background: #EFF6FF;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  border-color: #000000;
+  background: #F5F5F5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .model-row-left {
@@ -7048,8 +7048,8 @@ aside.sidebar.collapsed .sidebar-logo {
   flex-shrink: 0;
 }
 .model-radio-dot.active {
-  border-color: #2563EB;
-  background: #2563EB;
+  border-color: #000000;
+  background: #000000;
 }
 .model-radio-dot.active::after {
   content: '';

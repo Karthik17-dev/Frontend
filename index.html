@@ -1486,7 +1486,8 @@
                 </div>
                 <div class="ca-form-group">
                   <label for="caTemperatureInput">Temperature (Creativity)</label>
-                  <input type="range" id="caTemperatureInput" min="0" max="2" step="0.1" value="0.7" style="width: 100%;" />
+                  <div id="caTemperatureSliderRoot" style="width: 100%;"></div>
+                  <input type="hidden" id="caTemperatureInput" value="0.7" />
                 </div>
               </div>
             </div>
