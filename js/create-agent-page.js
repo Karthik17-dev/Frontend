@@ -45,6 +45,19 @@ export function initCreateAgentPage() {
     renderCreateAgentSkills();
     renderModels();
 
+    // Reset URL container & active integration button states
+    const urlInputContainer = document.getElementById('caUrlInputContainer');
+    if (urlInputContainer) {
+      urlInputContainer.style.display = 'none';
+    }
+    const btns = [
+      document.getElementById('btnCaIntegrationNotion'),
+      document.getElementById('btnCaIntegrationDrive'),
+      document.getElementById('btnCaIntegrationGithub'),
+      document.getElementById('btnCaIntegrationUrl')
+    ];
+    btns.forEach(btn => btn?.classList.remove('active'));
+
     // Show/Hide Page Views
     agentPage.style.display = 'none';
     createAgentPage.style.display = 'flex';
@@ -72,6 +85,58 @@ export function initCreateAgentPage() {
     state.desc = e.target.value;
     if (descCount) {
       descCount.textContent = `${state.desc.length}/600`;
+    }
+  });
+
+  // Knowledge Base: URL Input Toggles
+  const btnNotion = document.getElementById('btnCaIntegrationNotion');
+  const btnDrive = document.getElementById('btnCaIntegrationDrive');
+  const btnGithub = document.getElementById('btnCaIntegrationGithub');
+  const btnUrl = document.getElementById('btnCaIntegrationUrl');
+  const urlInputContainer = document.getElementById('caUrlInputContainer');
+  const urlInputLabel = document.getElementById('caUrlInputLabel');
+  const urlInputField = document.getElementById('caUrlInputField');
+  const urlInputSubmit = document.getElementById('caUrlInputSubmit');
+
+  const integrations = [
+    { btn: btnNotion, label: 'Notion Page/Workspace Link', placeholder: 'https://notion.so/...' },
+    { btn: btnDrive, label: 'Google Drive File/Folder Link', placeholder: 'https://drive.google.com/...' },
+    { btn: btnGithub, label: 'GitHub Repository Link', placeholder: 'https://github.com/...' },
+    { btn: btnUrl, label: 'Website URL', placeholder: 'https://example.com' }
+  ];
+
+  integrations.forEach(item => {
+    item.btn?.addEventListener('click', () => {
+      if (!urlInputContainer || !urlInputLabel || !urlInputField) return;
+      
+      const wasActive = item.btn.classList.contains('active');
+      
+      // Deactivate all first
+      integrations.forEach(x => x.btn?.classList.remove('active'));
+      
+      if (wasActive) {
+        urlInputContainer.style.display = 'none';
+      } else {
+        item.btn.classList.add('active');
+        urlInputLabel.textContent = item.label;
+        urlInputField.placeholder = item.placeholder;
+        urlInputField.value = '';
+        urlInputContainer.style.display = 'block';
+        urlInputField.focus();
+      }
+    });
+  });
+
+  urlInputSubmit?.addEventListener('click', () => {
+    if (!urlInputField || !urlInputContainer) return;
+    const val = urlInputField.value.trim();
+    if (val) {
+      showToast(`Link added successfully!`, 'success');
+      urlInputField.value = '';
+      urlInputContainer.style.display = 'none';
+      integrations.forEach(x => x.btn?.classList.remove('active'));
+    } else {
+      showToast(`Please enter a valid link.`, 'error');
     }
   });
 

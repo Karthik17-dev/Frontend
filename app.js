@@ -377,7 +377,7 @@ const starIndicator = `
       
       // Update placeholder
       if (chatPromptInput) {
-        chatPromptInput.placeholder = 'Ask anything...';
+        chatPromptInput.placeholder = 'Send a message... (@ to mention, / for commands)';
       }
     } else {
       // Transition to Empty State
@@ -388,7 +388,7 @@ const starIndicator = `
       if (chatMessagesView) chatMessagesView.style.display = 'none';
       
       if (chatPromptInput) {
-        chatPromptInput.placeholder = 'Ask anything...';
+        chatPromptInput.placeholder = 'Send a message... (@ to mention, / for commands)';
       }
     }
   }
