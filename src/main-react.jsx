@@ -15,16 +15,40 @@ if (pluginDialogContainer) {
 const tempSliderContainer = document.getElementById('caTemperatureSliderRoot');
 if (tempSliderContainer) {
   const root = createRoot(tempSliderContainer);
-  root.render(
-    React.createElement(Slider, {
-      defaultValue: [0.7],
-      min: 0,
-      max: 2,
-      step: 0.1,
-      onValueChange: (value) => {
-        const input = document.getElementById('caTemperatureInput');
-        if (input) input.value = value[0];
-      }
-    })
-  );
+  function TemperatureSlider() {
+    const [value, setValue] = React.useState([0.7]);
+    return React.createElement(
+      'div',
+      { style: { display: 'flex', alignItems: 'center', gap: '12px' } },
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(Slider, {
+          value: value,
+          min: 0,
+          max: 1,
+          step: 0.05,
+          onValueChange: (v) => {
+            setValue(v);
+            const input = document.getElementById('caTemperatureInput');
+            if (input) input.value = v[0];
+          }
+        })
+      ),
+      React.createElement(
+        'div',
+        {
+          style: {
+            minWidth: '40px',
+            textAlign: 'right',
+            fontSize: '13px',
+            fontWeight: '600',
+            color: '#111827'
+          }
+        },
+        value[0].toFixed(1)
+      )
+    );
+  }
+  root.render(React.createElement(TemperatureSlider));
 }

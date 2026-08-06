@@ -1199,7 +1199,7 @@ header.app-header {
 
 .chat-box:has(.model-dropdown-container.show),
 .chat-box:has(.attachment-dropdown.show) {
-  overflow: visible;
+  overflow: visible !important;
 }
 
 .chat-top-row {
@@ -2051,7 +2051,7 @@ input:checked + .toggle-slider:before {
 }
 
 .toggle-switch.sparkle-style input:checked + .toggle-slider {
-  background: linear-gradient(90deg, #A8F4D0 0%, #33A8FF 50%, #8A76FF 100%);
+  background: #000000;
 }
 
 .toggle-switch.sparkle-style .toggle-slider:before {
@@ -2065,10 +2065,6 @@ input:checked + .toggle-slider:before {
 
 .toggle-switch.sparkle-style input:checked + .toggle-slider:before {
   transform: translateX(18px);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2333A8FF'><path d='M16 4 Q16 10 22 10 Q16 10 16 16 Q16 10 10 10 Q16 10 16 4 Z'/><path d='M8 12 Q8 15 11 15 Q8 15 8 18 Q8 15 5 15 Q8 15 8 12 Z'/></svg>");
-  background-size: 11px 11px;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .divider {
@@ -2428,11 +2424,11 @@ aside.sidebar.collapsed .sidebar-toggle-btn {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  border: 1px solid #D1D5DB;
-  background: #F3F4F6;
-  color: #6B7280;
+  border: none;
+  background: transparent;
+  color: #000000;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   margin-right: 0;
   flex-shrink: 0;
   padding: 0;
@@ -2444,8 +2440,8 @@ aside.sidebar.collapsed .sidebar-toggle-btn {
 }
 
 .sidebar-toggle-btn:hover {
-  background-color: #E5E7EB;
-  color: #374151;
+  background-color: transparent;
+  color: #000000;
 }
 
 .sidebar-toggle-btn svg {
@@ -6603,20 +6599,20 @@ aside.sidebar.collapsed .sidebar-logo {
 .btn-ca-draft {
   display: flex;
   align-items: center;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #000000;
+  border: 1px solid #000000;
   border-radius: 8px;
   padding: 8px 14px;
   font-size: 13.5px;
   font-weight: 600;
-  color: #374151;
+  color: #FFFFFF;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.15s;
 }
 .btn-ca-draft:hover {
-  background: #F9FAFB;
-  border-color: #D1D5DB;
+  background: #000000;
+  border-color: #000000;
 }
 
 .ca-form-container {
@@ -9772,7 +9768,7 @@ main.main-content:has(.center-container.is-empty) header.app-header {
   width: 100% !important;
   box-sizing: border-box !important;
   min-height: 0 !important;
-  padding: 170px 24px !important;
+  padding: 300px 24px 170px 24px !important;
 }
 
 .center-container.is-empty #emptyStateView {
